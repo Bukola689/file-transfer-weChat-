@@ -3,11 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\FileTransfer;
+use App\Services\FileTransferService;
+use App\Services\NotificationService;
 use App\Http\Requests\StoreFileTransferRequest;
 use App\Http\Requests\UpdateFileTransferRequest;
 
 class FileTransferController extends Controller
 {
+    protected $transferService;
+    protected $notificationService;
+
+    public function __construct(
+        FileTransferService $transferService,
+        NotificationService $notificationService
+    ) 
+    {
+        $this->transferService = $transferService;
+        $this->notificationService = $notificationService;
+    }
+
+    
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +30,8 @@ class FileTransferController extends Controller
      */
     public function index()
     {
-        //
+         $transfers = auth()->user()->transfers()->latest()->paginate(10);
+        return response()->json($transfers);
     }
 
     /**
@@ -36,7 +52,19 @@ class FileTransferController extends Controller
      */
     public function store(StoreFileTransferRequest $request)
     {
-        //
+         $transfer = $this->transferService->createTransfer(
+            $request->validated(),
+            $request->file('files'),
+            auth()->user()
+        );
+
+        $this->notificationService->sendTransferNotifications($transfer);
+
+        return response()->json([
+            'message' => 'Transfer created successfully',
+            'data' => $transfer
+        ], 201);
+    
     }
 
     /**
@@ -45,9 +73,13 @@ class FileTransferController extends Controller
      * @param  \App\Models\FileTransfer  $fileTransfer
      * @return \Illuminate\Http\Response
      */
-    public function show(FileTransfer $fileTransfer)
+    public function show(FileTransfer $fileTransfer, $uuid)
     {
-        //
+         $transfer = FileTransfer::where('uuid', $uuid)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        return response()->json($transfer->load('files', 'recipients'));
     }
 
     /**
@@ -79,8 +111,14 @@ class FileTransferController extends Controller
      * @param  \App\Models\FileTransfer  $fileTransfer
      * @return \Illuminate\Http\Response
      */
-    public function destroy(FileTransfer $fileTransfer)
+    public function destroy(FileTransfer $fileTransfer, $uuid)
     {
-        //
+         $transfer = FileTransfer::where('uuid', $uuid)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $this->transferService->deleteTransfer($transfer);
+
+        return response()->json(['message' => 'Transfer deleted successfully']);
     }
 }

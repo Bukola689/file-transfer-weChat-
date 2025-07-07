@@ -30,7 +30,7 @@ class FileTransfer extends Model
         parent::boot();
 
         static::creating(function ($transfer) {
-            $transfer->uuid = Str::uuid();
+            $transfer->id = Str::id();
         });
     }
 

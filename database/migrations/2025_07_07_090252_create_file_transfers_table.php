@@ -15,6 +15,7 @@ class CreateFileTransfersTable extends Migration
     {
         Schema::create('file_transfers', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('sender_email');
             $table->string('subject');

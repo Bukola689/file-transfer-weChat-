@@ -14,6 +14,16 @@ class FileResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'transfer_id' => FileTransferResource::make($this->whenLoaded('transfer'))  ?? null,
+            'name' => $this->name,
+            'path' => $this->path,
+            'mime_type' => $this->mime_type,
+            'size' => $this->size,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'download_url' => route('files.download', ['file' => $this->id])
+        ];
     }
 }

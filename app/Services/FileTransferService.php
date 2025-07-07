@@ -56,14 +56,34 @@ class FileTransferService
         }
     }
 
-    public function deleteTransfer(FileTransfer $transfer)
+   public function deleteTransfer(FileTransfer $transfer)
     {
-        // Delete files from storage
-        foreach ($transfer->files as $file) {
-            Storage::disk('public')->delete($file->path);
-        }
-
+        Storage::disk('public')->deleteDirectory('transfers/' . $transfer->uuid);
         $transfer->delete();
+    }
+
+    public function findByUuid(string $uuid)
+    {
+        return FileTransfer::where('uuid', $uuid)->firstOrFail();
+    }
+
+    public function findByUuidWithRelations(string $uuid, array $relations)
+    {
+        return FileTransfer::with($relations)
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+    }
+
+    public function getAllTransfersPaginated(int $perPage = 20)
+    {
+        return FileTransfer::with(['user', 'files', 'downloads', 'recipients'])
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    public function verifyPassword(FileTransfer $transfer, string $password)
+    {
+        return \Hash::check($password, $transfer->password);
     }
 
     public function recordDownload(FileTransfer $transfer, array $downloadData)

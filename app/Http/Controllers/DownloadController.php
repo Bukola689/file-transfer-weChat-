@@ -3,11 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Download;
+use App\Http\Requests\DownloadAuthRequest;
+use App\Models\FileTransfer;
+use App\Services\DownloadService;
+use App\Services\FileTransferService;
 use App\Http\Requests\StoreDownloadRequest;
 use App\Http\Requests\UpdateDownloadRequest;
 
 class DownloadController extends Controller
-{
+{ 
+    protected $downloadService;
+    protected $transferService;
+
+    public function __construct(
+        DownloadService $downloadService,
+        FileTransferService $transferService
+    ) {
+        $this->downloadService = $downloadService;
+        $this->transferService = $transferService;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -45,10 +59,50 @@ class DownloadController extends Controller
      * @param  \App\Models\Download  $download
      * @return \Illuminate\Http\Response
      */
-    public function show(Download $download)
+    public function show(Download $download, $uuid)
     {
-        //
+         $transfer = $this->transferService->findByUuid($uuid);
+        
+        if ($transfer->password) {
+            return response()->json([
+                'requires_password' => true,
+                'transfer_uuid' => $transfer->uuid
+            ]);
+        }
+
+        return $this->downloadService->handleDownload($transfer, [
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'recipient_email' => request()->query('recipient')
+        ]);
     }
+
+
+    public function authenticate(DownloadAuthRequest $request, $uuid)
+    {
+        $transfer = $this->transferService->findByUuid($uuid);
+        
+        if (!$this->transferService->verifyPassword($transfer, $request->password)) {
+            return response()->json(['error' => 'Invalid password'], 401);
+        }
+
+        return $this->downloadService->handleDownload($transfer, [
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'recipient_email' => request()->query('recipient')
+        ]);
+    }
+
+    public function files($uuid)
+    {
+        $transfer = $this->transferService->findByUuid($uuid);
+        
+        return response()->json([
+            'transfer' => $transfer,
+            'files' => $transfer->files
+        ]);
+      } 
+ 
 
     /**
      * Show the form for editing the specified resource.
