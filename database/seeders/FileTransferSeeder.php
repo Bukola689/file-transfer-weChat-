@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\FileTransfer;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
 class FileTransferSeeder extends Seeder
@@ -13,6 +15,8 @@ class FileTransferSeeder extends Seeder
      */
     public function run()
     {
-        //
+        FileTransfer::factory()
+            ->count(10)
+            ->create();
     }
 }

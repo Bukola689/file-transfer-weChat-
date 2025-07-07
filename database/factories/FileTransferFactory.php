@@ -15,6 +15,7 @@ class FileTransferFactory extends Factory
     {
         return [
             'user_id' => null, // Assuming user_id can be null
+            'uuid' => $this->faker->unique()->uuid,
             'sender_email' => $this->faker->safeEmail,
             'subject' => $this->faker->sentence,
             'message' => $this->faker->paragraph,

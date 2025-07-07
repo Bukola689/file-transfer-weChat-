@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\File;
 use Illuminate\Database\Seeder;
 
 class FileSeeder extends Seeder
@@ -13,6 +14,8 @@ class FileSeeder extends Seeder
      */
     public function run()
     {
-        //
+        File::factory()
+            ->count(10)
+            ->create();
     }
 }

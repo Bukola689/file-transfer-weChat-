@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Download;
 use Illuminate\Database\Seeder;
 
 class DownloadSeeder extends Seeder
@@ -13,6 +14,8 @@ class DownloadSeeder extends Seeder
      */
     public function run()
     {
-        //
+      Download::factory()
+            ->count(10)
+            ->create();
     }
 }

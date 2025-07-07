@@ -13,10 +13,12 @@ class FileFactory extends Factory
      */
     public function definition()
     {
+       $filepath = storage_path('app/public/files');
+
         return [
             'transfer_id' => \App\Models\FileTransfer::factory(),
             'name' => $this->faker->word . '.' . $this->faker->fileExtension,
-            'path' => $this->faker->filePath(),
+            'path' => '/storage/uploads/' . $this->faker->uuid() . '.jpg', // Example path, adjust as needed
             'mime_type' => $this->faker->mimeType,
             'size' => $this->faker->numberBetween(1024, 10485760), // Size between 1KB and 10MB
         ];
