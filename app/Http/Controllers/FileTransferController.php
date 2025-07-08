@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FileTransfer;
 use App\Services\FileTransferService;
-use App\Services\NotificationService;
+use App\Services\Notification\TNotificationService;
 use App\Http\Requests\StoreFileTransferRequest;
 use App\Http\Requests\UpdateFileTransferRequest;
 
@@ -14,12 +14,12 @@ class FileTransferController extends Controller
     protected $notificationService;
 
     public function __construct(
-        FileTransferService $transferService,
-        NotificationService $notificationService
+        FileTransferService $transferService
+        //NotificationService $notificationService
     ) 
     {
         $this->transferService = $transferService;
-        $this->notificationService = $notificationService;
+        //$this->notificationService = $notificationService;
     }
 
     
@@ -30,7 +30,7 @@ class FileTransferController extends Controller
      */
     public function index()
     {
-         $transfers = auth()->user()->transfers()->latest()->paginate(10);
+         $transfers = FileTransfer::query()->latest()->paginate(10);
         return response()->json($transfers);
     }
 
@@ -55,10 +55,9 @@ class FileTransferController extends Controller
          $transfer = $this->transferService->createTransfer(
             $request->validated(),
             $request->file('files'),
-            auth()->user()
         );
 
-        $this->notificationService->sendTransferNotifications($transfer);
+       // $this->notificationService->sendTransferNotifications($transfer);
 
         return response()->json([
             'message' => 'Transfer created successfully',

@@ -12,7 +12,7 @@ class File extends Model
     protected $guarded = [];
 
     protected $fillable = [
-        'transfer_id',
+        'file_transfer_id',
         'name',
         'path',
         'mime_type',
@@ -21,7 +21,7 @@ class File extends Model
 
     public function transfer()
     {
-        return $this->belongsTo(FileTransfer::class);
+        return $this->belongsTo(FileTransfer::class, 'transfer_id');
     }
 
     public function getHumanReadableSizeAttribute()

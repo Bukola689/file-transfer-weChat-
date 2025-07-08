@@ -24,14 +24,16 @@ class StoreFileTransferRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'nullable|exists:users,id',
-            'sender_email' => 'required|email|max:255',
-            'subject' => 'required|string|max:255',
-            'message' => 'nullable|string|max:1000',
-            'password' => 'nullable|string|min:6|max:255',
-            'expires_at' => 'required|date|after_or_equal:now',
+           'sender_email' => 'required|email',
+            'recipients' => 'required|string',
+            'subject' => 'required|max:100',
+            'message' => 'nullable',
+            'files' => 'required|array|min:1',
+            'files.*' => 'file|max:102400', // 100MB max per file
+            //'expires_in' => 'required|in:1,3,7,14,30',
+            'password' => 'nullable|min:4',
             'download_limit' => 'nullable|integer|min:1',
-            'notify_on_download' => 'boolean',
+            'notify_on_download' => 'boolean'
         ];
     }
 }

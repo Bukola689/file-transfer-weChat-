@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Models\Recipient;
+use Carbon\Carbon;
+use App\Models\FileTransfer;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 class FileTransferService
@@ -12,12 +15,12 @@ class FileTransferService
     {
         // Create the transfer
         $transfer = FileTransfer::create([
-            'user_id' => $user ? $user->id : null,
+            'user_id' => auth()->id(),
             'sender_email' => $data['sender_email'],
             'subject' => $data['subject'],
             'message' => $data['message'] ?? null,
             'password' => isset($data['password']) ? bcrypt($data['password']) : null,
-            'expires_at' => now()->addDays($data['expires_in']),
+            'expires_at' => Carbon::now()->addDays($data['expires_in_days'] ?? 7),
             'download_limit' => $data['download_limit'] ?? null,
             'notify_on_download' => $data['notify_on_download'] ?? false
         ]);
@@ -105,29 +108,4 @@ class FileTransferService
         return $transfer;
     }
 
-    
-    /**
-     * Update the recipient's download status.
-     *
-     * @param int $recipientId
-     * @param bool $hasDownloaded
-     * @return Recipient|null
-     */
-    public function updateRecipientDownloadStatus(int $recipientId, bool $hasDownloaded): ?Recipient
-    {
-        try {
-            $recipient = Recipient::findOrFail($recipientId);
-            $recipient->has_downloaded = $hasDownloaded;
-            $recipient->save();
-
-            return $recipient;
-        } catch (\Exception $e) {
-            Log::error('Failed to update recipient download status', [
-                'recipient_id' => $recipientId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return null;
-        }
-    }
 }

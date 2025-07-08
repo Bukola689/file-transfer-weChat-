@@ -16,7 +16,7 @@ class FileFactory extends Factory
        $filepath = storage_path('app/public/files');
 
         return [
-            'transfer_id' => \App\Models\FileTransfer::factory(),
+            'file_transfer_id' => \App\Models\FileTransfer::factory(),
             'name' => $this->faker->word . '.' . $this->faker->fileExtension,
             'path' => '/storage/uploads/' . $this->faker->uuid() . '.jpg', // Example path, adjust as needed
             'mime_type' => $this->faker->mimeType,
