@@ -25,13 +25,22 @@ class FileTransfer extends Model
 
     protected $dates = ['expires_at'];
 
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($transfer) {
-            $transfer->uuid = Str::uuid();
-        });
+    //     static::creating(function ($transfer) {
+    //         $transfer->uuid = Str::uuid();
+    //     });
+    // }
+
+        protected static function boot()
+    {
+          parent::boot();
+
+           static::creating(function ($model) {
+           $model->uuid = (string) \Illuminate\Support\Str::uuid();
+         });
     }
 
     public function user()

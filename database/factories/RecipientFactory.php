@@ -14,7 +14,7 @@ class RecipientFactory extends Factory
     public function definition()
     {
         return [
-            'transfer_id' => \App\Models\FileTransfer::factory(),
+            'file_transfer_id' => \App\Models\FileTransfer::factory(),
             'email' => $this->faker->unique()->safeEmail,
             'has_downloaded' => $this->faker->boolean(50), // 50% chance of being true
             // Additional fields can be added here if needed

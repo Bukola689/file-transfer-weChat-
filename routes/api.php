@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\FileTransferController;
-use App\Http\Controllers\V1\Api\DownloadController;
+use App\Http\Controllers\DownloadController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,6 +50,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
       });
 
 // Public download routes
-    Route::get('/download/{uuid}', 'DownloadController@show');
-    Route::post('/download/{uuid}/authenticate', 'DownloadController@authenticate');
-    Route::get('/download/{uuid}/files', 'DownloadController@files');
+    Route::get('/download/{uuid}', [DownloadController::class, 'show']);
+    Route::post('/download/{uuid}/authenticate',  [DownloadController::class, 'authenticate']);
+    Route::get('/download/{uuid}/files', [DownloadController::class, 'files']);

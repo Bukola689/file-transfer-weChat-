@@ -6,6 +6,8 @@ use App\Models\Download;
 use App\Http\Requests\DownloadAuthRequest;
 use App\Models\FileTransfer;
 use App\Services\DownloadService;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Services\FileTransferService;
 use App\Http\Requests\StoreDownloadRequest;
 use App\Http\Requests\UpdateDownloadRequest;
@@ -59,28 +61,36 @@ class DownloadController extends Controller
      * @param  \App\Models\Download  $download
      * @return \Illuminate\Http\Response
      */
-    public function show(Download $download, $uuid)
+    public function show(Request $request,Download $download, $uuid)
     {
-         $transfer = $this->transferService->findByUuid($uuid);
-        
-        if ($transfer->password) {
-            return response()->json([
-                'requires_password' => true,
-                'transfer_uuid' => $transfer->uuid
-            ]);
-        }
 
-        return $this->downloadService->handleDownload($transfer, [
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'recipient_email' => request()->query('recipient')
-        ]);
+        if (!$uuid) {
+        return response()->json(['error' => 'UUID is required'], 400);
     }
 
+    $transfer = $this->transferService->findByUuid($uuid);
 
-    public function authenticate(DownloadAuthRequest $request, $uuid)
+    if (!$transfer) {
+        return response()->json(['error' => 'Transfer not found'], 404);
+    }
+
+    // if ($transfer->password) {
+    //     return response()->json([
+    //         'requires_password' => true,
+    //         'transfer_uuid' => $transfer->uuid
+    //     ]);
+    // }
+
+    return $this->downloadService->handleDownload($transfer, [
+        'ip_address' => $request->ip(),
+        'user_agent' => $request->userAgent(),
+        'recipient_email' => $request->query('recipient')
+    ]);
+
+    }
+
+    public function authenticate(StoreDownloadRequest $request, $uuid)
     {
-        $transfer = $this->transferService->findByUuid($uuid);
         
         if (!$this->transferService->verifyPassword($transfer, $request->password)) {
             return response()->json(['error' => 'Invalid password'], 401);
@@ -101,7 +111,7 @@ class DownloadController extends Controller
             'transfer' => $transfer,
             'files' => $transfer->files
         ]);
-      } 
+    }
  
 
     /**

@@ -6,6 +6,7 @@ use App\Models\FileTransfer;
 use App\Services\FileTransferService;
 use App\Services\Notification\TNotificationService;
 use App\Http\Requests\StoreFileTransferRequest;
+use App\Http\Resources\FileTransferResource;
 use App\Http\Requests\UpdateFileTransferRequest;
 
 class FileTransferController extends Controller
@@ -31,7 +32,9 @@ class FileTransferController extends Controller
     public function index()
     {
          $transfers = FileTransfer::query()->latest()->paginate(10);
-        return response()->json($transfers);
+       // return response()->json($transfers);
+
+         return FileTransferResource::collection($transfers);
     }
 
     /**
@@ -60,8 +63,10 @@ class FileTransferController extends Controller
        // $this->notificationService->sendTransferNotifications($transfer);
 
         return response()->json([
-            'message' => 'Transfer created successfully',
-            'data' => $transfer
+             'uuid' => $transfer->uuid,
+             'subject' => $transfer->subject,
+             'expires_at' => $transfer->expires_at,
+             'files' => $transfer->files,
         ], 201);
     
     }
@@ -79,6 +84,8 @@ class FileTransferController extends Controller
             ->firstOrFail();
 
         return response()->json($transfer->load('files', 'recipients'));
+
+       // return FileTransferResource::collection($transfer->mapInto('files', 'recipients'));
     }
 
     /**

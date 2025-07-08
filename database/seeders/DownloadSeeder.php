@@ -14,8 +14,8 @@ class DownloadSeeder extends Seeder
      */
     public function run()
     {
-      Download::factory()
-            ->count(10)
-            ->create();
+      // Download::factory()
+      //       ->count(10)
+      //       ->create();
     }
 }

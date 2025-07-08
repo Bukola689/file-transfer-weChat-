@@ -22,7 +22,8 @@ class FileTransferService
             'password' => isset($data['password']) ? bcrypt($data['password']) : null,
             'expires_at' => Carbon::now()->addDays($data['expires_in_days'] ?? 7),
             'download_limit' => $data['download_limit'] ?? null,
-            'notify_on_download' => $data['notify_on_download'] ?? false
+            'notify_on_download' => $data['notify_on_download'] ?? false,
+            
         ]);
 
         // Store files

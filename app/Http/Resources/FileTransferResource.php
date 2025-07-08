@@ -16,7 +16,10 @@ class FileTransferResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user_id' => UserResource::make($this->whenLoaded('user')) ?? null,
+            // 'user_id' => UserResource::make($this->whenLoaded('user')) ?? null,
+            'user_id' => $this->user_id,
+            'uuid' => $this->uuid,
+            'recipients' => $this->recipients,
             'sender_email' => $this->sender_email,
             'subject' => $this->subject,
             'message' => $this->message,

@@ -14,7 +14,7 @@ class DownloadFactory extends Factory
     public function definition()
     {
         return [
-            'transfer_id' => \App\Models\FileTransfer::factory(),
+            'file_transfer_id' => \App\Models\FileTransfer::factory(),
             'ip_address' => $this->faker->ipv4,
             'user_agent' => $this->faker->userAgent,
         ];

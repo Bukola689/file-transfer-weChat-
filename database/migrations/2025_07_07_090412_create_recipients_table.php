@@ -15,7 +15,7 @@ class CreateRecipientsTable extends Migration
     {
         Schema::create('recipients', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('transfer_id')->constrained('file_transfers')->onDelete('cascade');
+            $table->foreignId('file_transfer_id')->constrained('file_transfers')->onDelete('cascade');
             $table->string('email');
             $table->boolean('has_downloaded')->default(false);
             $table->timestamps();
