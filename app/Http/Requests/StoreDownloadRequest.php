@@ -24,9 +24,11 @@ class StoreDownloadRequest extends FormRequest
     public function rules()
     {
         return [
-            'file_transfer_id' => 'required|exists:file_transfers,id',
-            'ip_address' => 'required|ip',
-            'user_agent' => 'nullable|string|max:255',
+            // 'file_transfer_id' => 'required|exists:file_transfers,id',
+            // 'ip_address' => 'required|ip',
+            // 'user_agent' => 'nullable|string|max:255',
+
+            'password' => 'required|string'
         ];
     }
 }

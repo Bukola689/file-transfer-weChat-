@@ -68,10 +68,15 @@ class DownloadController extends Controller
         return response()->json(['error' => 'UUID is required'], 400);
     }
 
-    $transfer = $this->transferService->findByUuid($uuid);
+    //$transfer = $this->transferService->findByUuid($uuid);
 
-    if (!$transfer) {
-        return response()->json(['error' => 'Transfer not found'], 404);
+       $transfer = FileTransfer::where('uuid', $uuid)->first();
+
+        if (!$transfer) {
+        throw new \Illuminate\Database\Eloquent\ModelNotFoundException(
+            "No file transfer found with UUID: {$uuid}"
+        );
+
     }
 
     // if ($transfer->password) {
@@ -91,6 +96,15 @@ class DownloadController extends Controller
 
     public function authenticate(StoreDownloadRequest $request, $uuid)
     {
+        //$transfer = $this->transferService->findByUuid($uuid);
+
+        $transfer = FileTransfer::where('uuid', $uuid)->first();
+
+        if (!$transfer) {
+        throw new \Illuminate\Database\Eloquent\ModelNotFoundException(
+            "No file transfer found with UUID: {$uuid}"
+        );
+    }
         
         if (!$this->transferService->verifyPassword($transfer, $request->password)) {
             return response()->json(['error' => 'Invalid password'], 401);

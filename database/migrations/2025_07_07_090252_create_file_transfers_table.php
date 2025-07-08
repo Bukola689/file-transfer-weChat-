@@ -22,7 +22,7 @@ class CreateFileTransfersTable extends Migration
             $table->text('message')->nullable();
             $table->string('password')->nullable();
             $table->timestamp('expires_at');
-            $table->integer('download_limit')->nullable();
+            $table->integer('download_limit')->default(0)->nullable();
             $table->integer('downloads')->default(0);
             $table->boolean('notify_on_download')->default(false);
             $table->timestamps();

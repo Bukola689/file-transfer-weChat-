@@ -34,6 +34,10 @@ class FileTransfer extends Model
     //     });
     // }
 
+     protected $casts = [
+    'download_limit' => 'integer',
+    ];
+
         protected static function boot()
     {
           parent::boot();
@@ -73,10 +77,21 @@ class FileTransfer extends Model
         return $this->expires_at->isPast();
     }
 
-    public function hasReachedDownloadLimit()
-    {
-        return $this->download_limit && $this->downloads->count() >= $this->download_limit;
+    // public function hasReachedDownloadLimit()
+    // {
+    //     return $this->download_limit && $this->downloads->count() >= $this->download_limit;
+    // }
+
+  public function hasReachedDownloadLimit(): bool
+{
+    // No limit means unlimited downloads
+    if (is_null($this->download_limit)) {
+        return false;
     }
+
+    // Use the relationship method, not property
+    return $this->downloads()->count() >= $this->download_limit;
+}
 
     public function canBeDownloaded()
     {

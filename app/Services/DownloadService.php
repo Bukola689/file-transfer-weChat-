@@ -25,11 +25,11 @@ class DownloadService
        // $this->notificationService = $notificationService;
     }
 
-    public function handleDownload(FileTransfer $transfer, array $data): StreamedResponse
+    public function handleDownload(FileTransfer $transfer, array $data)
     {
 
         if (!$transfer->canBeDownloaded()) {
-            abort(403, 'This transfer is no longer available');
+            return response()->json(['This transfer is no longer available'], 403);
         }
 
         $this->transferService->recordDownload($transfer, $data);
@@ -38,6 +38,12 @@ class DownloadService
         if ($transfer->files->count() === 1) {
             return $this->fileService->downloadFile($transfer->files->first());
         }
+
+        if ($transfer->hasReachedDownloadLimit()) {
+              return response()->json([
+              'error' => 'Download limit reached'
+             ], 403);
+          }
 
         return $this->fileService->downloadAsZip($transfer);
     }
